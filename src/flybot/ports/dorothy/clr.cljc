@@ -45,8 +45,8 @@
 (defn show
   ([g] (show g nil))
   ([g {:keys [alg path]
-       :or {alg "/usr/local/bin/dot"
-            path "Temp/dotxamp.png"} ;; this is bullshit
+       :or {alg "dot" ;; "/usr/local/bin/dot"
+            path "Temp/dotxamp.png"}
        :as opts}]
    (let [path' (.FullName (file-info path))
          _ (println "opts: " opts)
@@ -58,7 +58,8 @@
                 (str "Some problem:\n"
                      (with-out-str
                        (clojure.pprint/pprint attempt))))))
-     (sh/sh "open" path')
+     ;; doesn't work in windows:
+     ;;(sh/sh "open" path')
      g)))
 
 
