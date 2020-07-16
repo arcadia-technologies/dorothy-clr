@@ -44,15 +44,23 @@
 
 (defn show
   ([g] (show g nil))
-  ([g {:keys [alg path]
+  ([g {:keys [alg path format]
        :or {alg "dot" ;; "/usr/local/bin/dot"
-            path "Temp/dotxamp.png"}
+            format :png}
        :as opts}]
-   (let [path' (.FullName (file-info path))
+   (let [{:keys [path]
+          :or {path (str "Temp/dotxamp."
+                         (case format
+                           :png "png"
+                           :svg "svg"))}} opts
+         path' (.FullName (file-info path))
          _ (println "opts: " opts)
          dotstr g ;;(apply lio/dot-str g (apply concat opts))
-         temp-dot (make-temp-dot path' dotstr) 
-         attempt (sh/sh alg  "-Tpng" temp-dot "-o" path')]
+         temp-dot (make-temp-dot path' dotstr)
+         format-arg (case format
+                      :png "-Tpng"
+                      :svg "-Tsvg")
+         attempt (sh/sh alg format-arg temp-dot "-o" path')]
      (when (not= "" (:err attempt))
        (throw (Exception.
                 (str "Some problem:\n"
